@@ -17,6 +17,8 @@
 12. [Deployment](#deployment)
 13. [Performance Considerations](#performance-considerations)
 14. [Security Measures](#security-measures)
+15. [Actual Repository Structure](#actual-repository-structure)
+16. [Component Reference Guide](#component-reference-guide)
 
 ## Tech Stack
 - **Framework:** React.js with TypeScript, Next.js for server-side rendering
@@ -130,32 +132,7 @@ The OmpuTag frontend follows a modular architecture with clear separation of con
 User Interaction → Component → Action/Hook → Service → API/Firebase → State Update → Re-render
 ```
 
-## Component Structure
-```
-src/
-├── components/           # Reusable UI components
-│   ├── common/           # Shared components (buttons, inputs, etc.)
-│   ├── layout/           # Layout components (header, footer, etc.)
-│   ├── auth/             # Authentication components
-│   ├── dashboard/        # Dashboard specific components
-│   ├── finder/           # Finder interface components
-│   └── tag/              # Tag management components
-├── pages/                # Next.js pages
-│   ├── index.js          # Landing page
-│   ├── auth/             # Auth pages (login, register)
-│   ├── dashboard/        # Owner dashboard pages
-│   ├── finder/           # Finder interface pages
-│   └── tag/[id].js       # Dynamic tag pages
-├── context/              # React Context definitions
-├── hooks/                # Custom React hooks
-├── services/             # API and service integrations
-│   ├── firebase/         # Firebase service abstractions
-│   ├── api/              # REST API clients
-│   └── storage/          # Local storage utilities
-├── utils/                # Utility functions
-├── styles/               # Global styles and theme
-└── types/                # TypeScript type definitions
-```
+
 
 ## API Endpoints
 The frontend interacts with the following key endpoints:
@@ -230,3 +207,99 @@ The application follows a modern deployment pipeline:
 - **Sensitive Data Handling:** No PII stored in client-side storage
 - **API Rate Limiting:** Prevention of brute force attacks
 - **Regular Security Audits:** Dependency scanning and vulnerability checks
+
+## Actual Repository Structure
+The actual implementation of the OmpuTag frontend follows this structure:
+
+```
+omputag-frontend/
+├── src/                         # Source code directory
+│   ├── app/                     # Next.js App Router structure
+│   │   ├── page.tsx             # Landing page (/)
+│   │   ├── auth/                # Authentication routes
+│   │   │   └── login/           # Login functionality
+│   │   │       └── page.tsx     # Login page (/auth/login)
+│   │   ├── dashboard/           # Dashboard routes (protected)
+│   │   │   ├── layout.tsx       # Dashboard layout with sidebar
+│   │   │   ├── page.tsx         # Main dashboard page (/dashboard)
+│   │   │   └── ... (other dashboard pages)
+│   │   └── finder/              # Finder functionality
+│   │       └── page.tsx         # Finder page (/finder)
+│   ├── components/              # Reusable UI components
+│   │   ├── common/              # Shared UI elements
+│   │   ├── layout/              # Layout components
+│   │   ├── auth/                # Authentication-related components
+│   │   ├── dashboard/           # Dashboard-specific components
+│   │   ├── finder/              # Finder-specific components
+│   │   └── tag/                 # NFC tag-related components
+│   ├── context/                 # React Context definitions
+│   │   └── FirebaseContext.tsx  # Firebase authentication and data context
+│   ├── hooks/                   # Custom React hooks
+│   ├── services/                # External service integrations
+│   │   ├── firebase/            # Firebase services
+│   │   │   ├── config.ts        # Firebase configuration
+│   │   │   └── index.ts         # Firebase service initialization
+│   │   ├── api/                 # API clients
+│   │   └── storage/             # Local storage utilities
+│   ├── styles/                  # Global styles
+│   │   └── globals.css          # Global CSS including Tailwind imports
+│   ├── utils/                   # Utility functions
+│   └── types/                   # TypeScript type definitions
+├── public/                      # Static assets
+├── .env.local.example           # Example environment variables
+├── .gitignore                   # Git ignore file
+├── next.config.js               # Next.js configuration
+├── tailwind.config.js           # Tailwind CSS configuration
+├── postcss.config.js            # PostCSS configuration
+├── tsconfig.json                # TypeScript configuration
+├── .eslintrc.json               # ESLint configuration
+├── package.json                 # Dependencies and scripts
+└── README.md                    # Project documentation
+```
+
+> **Note:** This structure uses Next.js 14's App Router rather than the Pages Router mentioned in the initial component structure section.
+
+## Component Reference Guide
+
+### Key Files and Their Responsibilities
+
+#### Entry Points
+- **`src/app/page.tsx`**: Main landing page that directs users to either owner or finder interfaces
+- **`src/app/layout.tsx`**: Root layout that wraps all pages and provides Firebase context
+
+#### Authentication
+- **`src/app/auth/login/page.tsx`**: Handles user login with email/password via Firebase
+- **`src/context/FirebaseContext.tsx`**: Provides authentication state and Firebase services throughout the app
+
+#### Dashboard (Owner Interface)
+- **`src/app/dashboard/layout.tsx`**: Protected layout that includes sidebar navigation and sign-out functionality
+- **`src/app/dashboard/page.tsx`**: Main dashboard view showing tag statistics and summary information
+
+#### Finder Interface
+- **`src/app/finder/page.tsx`**: Form for people who find items to contact owners
+
+#### Firebase Integration
+- **`src/services/firebase/config.ts`**: Firebase configuration (uses environment variables)
+- **`src/services/firebase/index.ts`**: Firebase service initialization and exports
+
+### Technical Notes
+
+1. **App Router**: The application uses Next.js App Router which is different from the Pages Router. Key differences:
+   - File-based routing inside the `src/app` directory
+   - Server components by default (must use 'use client' directive for client components)
+   - Layouts defined using `layout.tsx` files
+
+2. **Authentication Flow**:
+   - Firebase Authentication handles user sessions
+   - Protected routes check authentication state via `useFirebase` hook
+   - Redirects unauthenticated users to login page
+
+3. **Data Flow**:
+   - User authentication state flows from FirebaseContext
+   - Firestore database operations performed in page components
+   - Form submissions use React state for client-side handling before API calls
+
+4. **Known Issues**:
+   - React hooks error in `dashboard/layout.tsx` with `useFirebase` in callbacks
+   - Unescaped entity warnings in text content
+   - Link component TypeScript warnings in some components

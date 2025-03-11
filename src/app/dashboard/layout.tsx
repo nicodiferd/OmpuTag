@@ -10,7 +10,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useFirebase();
+  const { user, loading, auth } = useFirebase();
   const router = useRouter();
 
   // Redirect if not authenticated
@@ -33,6 +33,17 @@ export default function DashboardLayout({
   if (!user) {
     return null;
   }
+
+  // Handle sign out
+  const handleSignOut = () => {
+    if (confirm('Are you sure you want to sign out?')) {
+      import('firebase/auth').then(({ signOut }) => {
+        signOut(auth).then(() => {
+          router.push('/');
+        });
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -80,15 +91,7 @@ export default function DashboardLayout({
             </li>
             <li>
               <button
-                onClick={() => {
-                  if (confirm('Are you sure you want to sign out?')) {
-                    import('firebase/auth').then(({ signOut }) => {
-                      signOut(useFirebase().auth).then(() => {
-                        router.push('/');
-                      });
-                    });
-                  }
-                }}
+                onClick={handleSignOut}
                 className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Sign Out

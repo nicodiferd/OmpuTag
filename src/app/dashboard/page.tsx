@@ -160,7 +160,7 @@ export default function Dashboard() {
               ) : (
                 <tr>
                   <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                    You don't have any tags yet. <a href="/dashboard/tags/new" className="text-primary-600 hover:text-primary-500">Add your first tag</a>
+                    You don&apos;t have any tags yet. <a href="/dashboard/tags/new" className="text-primary-600 hover:text-primary-500">Add your first tag</a>
                   </td>
                 </tr>
               )}

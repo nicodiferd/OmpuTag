@@ -24,7 +24,14 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login. Please try again.');
+      // Check for specific Firebase auth errors and provide friendly messages
+      if (err.code === 'auth/invalid-credential' || 
+          err.code === 'auth/user-not-found' || 
+          err.code === 'auth/wrong-password') {
+        setError('Error: Invalid username and password');
+      } else {
+        setError('Failed to login. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -59,7 +66,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600"
+                className="block w-full rounded-md border-0 py-1.5 px-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600"
               />
             </div>
           </div>
@@ -84,7 +91,7 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600"
+                className="block w-full rounded-md border-0 py-1.5 px-2 text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600"
               />
             </div>
           </div>
